@@ -4,6 +4,7 @@ import (
 	faktory "github.com/contribsys/faktory/client"
 	"github.com/robfig/cron"
 	"os/exec"
+	"time"
 )
 
 type Job struct {
@@ -25,11 +26,11 @@ func (j *Job) Start() {
 		j.Queue = "default"
 	}
 
-	log.Debugf("Running %v (queue: %v, args: %v)", j.Name, j.Queue, j.Args)
+	logger.Debugf("Running %v (queue: %v, args: %v)", j.Name, j.Queue, j.Args)
 
 	client, err := faktory.Open()
 	if err != nil {
-		log.Warnf("Failed to send %v to faktory: %v", j.Name, err)
+		logger.Warnf("Failed to send %v to faktory: %v", j.Name, err)
 		return
 	}
 	defer client.Close()
@@ -48,7 +49,7 @@ func (j *Job) Start() {
 	err = client.Push(job)
 
 	if err != nil {
-		log.Warnf("Failed to push %v to faktory: %v", j.Name, err)
+		logger.Warnf("Failed to push %v to faktory: %v", j.Name, err)
 		return
 	}
 }
@@ -73,13 +74,13 @@ func (j *Job) ExecCommand() {
 	}
 
 	app := stringArgs[0]
-	log.Infof("Executing a %v command for %v job", app, j.Name)
+	logger.Infof("%v: Executing a %v command for %v job", time.Now().Format(time.RFC3339), app, j.Name)
 	
 	cmd := exec.Command(app, stringArgs[1:]...)
 	_, err := cmd.Output()
 
 	if err != nil {
-		log.Fatalf("Error executing command: %v", err.Error())
+		logger.Fatalf("%v: Error executing command: %v", time.Now().Format(time.RFC3339), err.Error())
         return
     }
 }
