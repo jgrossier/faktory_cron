@@ -22,21 +22,21 @@ func init() {
 
 func main() {
 	configureLogging()
-	log.Infof("Cron for Faktory (version %s)", version)
-	log.Debugf("Reading config from file: %v", config_path)
+	logger.Infof("Cron for Faktory (version %s)", version)
+	logger.Debugf("Reading config from file: %v", config_path)
 
 	config = NewConfig(config_path)
 	err := config.Update()
 	if err != nil {
-		log.Fatalf("Error in config: %v", err)
+		logger.Fatalf("Error in config: %v", err)
 	}
 
 	scheduler = cron.New()
 	for _, t := range config.Jobs {
-		log.Infof("Will run %v job (%v) every %v", t.Name, t.Type, t.Schedule)
+		logger.Infof("Will run %v job (%v) every %v", t.Name, t.Type, t.Schedule)
 		t.AddToScheduler()
 	}
-	log.Infof("Loaded %d scheduled tasks from %v", len(config.Jobs), config_path)
+	logger.Infof("Loaded %d scheduled tasks from %v", len(config.Jobs), config_path)
 
 	scheduler.Start()
 	defer scheduler.Stop()
