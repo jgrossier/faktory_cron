@@ -4,7 +4,6 @@ import (
 	faktory "github.com/contribsys/faktory/client"
 	"github.com/robfig/cron"
 	"os/exec"
-	"time"
 )
 
 type Job struct {
@@ -74,13 +73,13 @@ func (j *Job) ExecCommand() {
 	}
 
 	app := stringArgs[0]
-	logger.Infof("%v: Executing a %v command for %v job", time.Now().Format(time.RFC3339), app, j.Name)
+	logger.Infof("Executing a %v command for %v job", app, j.Name)
 	
 	cmd := exec.Command(app, stringArgs[1:]...)
 	_, err := cmd.Output()
 
 	if err != nil {
-		logger.Fatalf("%v: Error executing command: %v", time.Now().Format(time.RFC3339), err.Error())
+		logger.Fatalf("Error executing command: %v", err.Error())
         return
     }
 }
